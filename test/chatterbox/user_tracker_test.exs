@@ -16,6 +16,16 @@ defmodule Chatterbox.UserTrackerTest do
     assert length == 1
   end
 
+  test "removes user" do
+    user = %User{id: "test"}
+    UserTracker.add_user(user)
+    length = UserTracker.length()
+    assert length == 1
+    UserTracker.remove_user("test")
+    length = UserTracker.length()
+    assert length == 0
+  end
+
   test "returns empty list if there is only 1 user" do
     user = %User{id: "test"}
     UserTracker.add_user(user)

@@ -9,6 +9,8 @@ defmodule Chatterbox.UserTracker do
 
   def add_user(user), do: GenServer.cast(__MODULE__, {:add_user, user})
 
+  def remove_user(id), do: GenServer.cast(__MODULE__, {:remove_user, id})
+
   def get_pair(), do: GenServer.call(__MODULE__, :get_pair)
 
   def length(), do: GenServer.call(__MODULE__, :length)
@@ -23,6 +25,11 @@ defmodule Chatterbox.UserTracker do
   @impl true
   def handle_cast({:add_user, %Chatterbox.User{} = user}, users) do
     {:noreply, [user | users]}
+  end
+
+  @impl true
+  def handle_cast({:remove_user, user_id}, users) do
+    {:noreply, users |> Enum.filter(&(&1.id != user_id))}
   end
 
   @impl true
