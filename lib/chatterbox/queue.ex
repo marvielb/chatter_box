@@ -1,4 +1,4 @@
-defmodule Chatterbox.UserTracker do
+defmodule Chatterbox.Queue do
   use GenServer
 
   # Client API

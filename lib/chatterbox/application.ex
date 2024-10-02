@@ -15,7 +15,7 @@ defmodule Chatterbox.Application do
       {Finch, name: Chatterbox.Finch},
       # Start a worker by calling: Chatterbox.Worker.start_link(arg)
       # {Chatterbox.Worker, arg},
-      {Chatterbox.UserTracker, :ok},
+      {Chatterbox.Queue, :ok},
       {ChatterboxWeb.LiveMonitor, :ok},
       # Start to serve requests, typically the last entry
       ChatterboxWeb.Endpoint
