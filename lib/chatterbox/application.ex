@@ -16,7 +16,6 @@ defmodule Chatterbox.Application do
       # Start a worker by calling: Chatterbox.Worker.start_link(arg)
       # {Chatterbox.Worker, arg},
       {Chatterbox.Queue, :ok},
-      {ChatterboxWeb.LiveMonitor, :ok},
       # Start to serve requests, typically the last entry
       ChatterboxWeb.Endpoint
     ]

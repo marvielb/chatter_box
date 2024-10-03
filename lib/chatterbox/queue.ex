@@ -1,58 +1,46 @@
 defmodule Chatterbox.Queue do
   use GenServer
 
-  # Client API
+  def monitor(pid, meta) do
+    GenServer.call(__MODULE__, {:monitor, pid, meta})
+  end
 
   def start_link(_) do
     GenServer.start_link(__MODULE__, :ok, name: __MODULE__)
   end
 
-  def add_user(user), do: GenServer.cast(__MODULE__, {:add_user, user})
-
-  def remove_user(id), do: GenServer.cast(__MODULE__, {:remove_user, id})
-
-  def get_pair(), do: GenServer.call(__MODULE__, :get_pair)
-
-  def length(), do: GenServer.call(__MODULE__, :length)
-
-  # Server Callbacks
-
-  @impl true
-  def init(:ok) do
-    {:ok, []}
+  def init(_) do
+    {:ok, %{previous_user: nil}}
   end
 
-  @impl true
-  def handle_cast({:add_user, %Chatterbox.User{} = user}, users) do
-    {:noreply, [user | users]}
-  end
+  def handle_call({:monitor, pid, meta}, _, %{previous_user: previous_user} = state) do
+    Process.monitor(pid)
+    user = {pid, meta}
 
-  @impl true
-  def handle_cast({:remove_user, user_id}, users) do
-    {:noreply, users |> Enum.filter(&(&1.id != user_id))}
-  end
+    case previous_user do
+      nil ->
+        {:reply, :ok, %{state | previous_user: user}}
 
-  @impl true
-  def handle_call(:get_pair, _from, users) do
-    case get_pair(users) do
-      {:ok, {rest, first_two}} ->
-        {:reply, first_two, rest}
-
-      :error ->
-        {:reply, [], users}
+      _ ->
+        create_room(previous_user, user)
+        {:reply, :ok, %{state | previous_user: nil}}
     end
   end
 
-  @impl true
-  def handle_call(:length, _from, users) do
-    {:reply, length(users), users}
+  def handle_info({:DOWN, _ref, :process, pid, _reason}, state) do
+    {pidPrevious, _} = state.previous_user
+
+    if pidPrevious == pid do
+      {:noreply, %{state | previous_user: nil}}
+    else
+      {:noreply, state}
+    end
   end
 
-  defp get_pair(users) when length(users) > 1 do
-    {:ok, Enum.split(users, -2)}
-  end
-
-  defp get_pair(_users) do
-    :error
+  defp create_room({pid, meta}, {pid2, meta2}) do
+    room_id = "#{meta.id} - #{meta2.id}"
+    send(pid, {:room_ready, room_id})
+    send(pid2, {:room_ready, room_id})
+    IO.inspect("Room created! #{meta.id} - #{meta2.id}")
   end
 end
