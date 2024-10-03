@@ -1,4 +1,5 @@
 defmodule ChatterboxWeb.QueueLive do
+  alias Chatterbox.User
   use ChatterboxWeb, :live_view
 
   alias Chatterbox.Queue
@@ -13,7 +14,7 @@ defmodule ChatterboxWeb.QueueLive do
 
   def mount(_params, _session, socket) do
     if connected?(socket) do
-      Queue.monitor(self(), %{id: socket.id})
+      Queue.join(self(), %User{id: socket.id})
     end
 
     {:ok, assign(socket, room_id: "hehe")}
