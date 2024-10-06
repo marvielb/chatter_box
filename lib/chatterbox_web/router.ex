@@ -17,8 +17,7 @@ defmodule ChatterboxWeb.Router do
   scope "/", ChatterboxWeb do
     pipe_through :browser
 
-    get "/", PageController, :home
-    live "/queue", QueueLive
+    live "/", QueueLive
   end
 
   # Other scopes may use custom stacks.

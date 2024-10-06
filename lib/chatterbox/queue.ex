@@ -30,6 +30,9 @@ defmodule Chatterbox.Queue do
       nil ->
         {:reply, :ok, %{state | previous_view: view}}
 
+      {_, ^user} ->
+        {:reply, {:error, :already_joined}, %{state | previous_view: view}}
+
       _ ->
         create_room(previous_view, view)
         {:reply, :ok, %{state | previous_view: nil}}
