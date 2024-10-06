@@ -6,13 +6,17 @@ defmodule Chatterbox.Queue do
 
   use GenServer
 
-  def join(pid, user) do
-    GenServer.call(__MODULE__, {:join, pid, user})
-  end
+  # Client
 
   def start_link(_) do
     GenServer.start_link(__MODULE__, :ok, name: __MODULE__)
   end
+
+  def join(pid, user) do
+    GenServer.call(__MODULE__, {:join, pid, user})
+  end
+
+  # Server
 
   def init(_) do
     {:ok, %{previous_view: nil}}

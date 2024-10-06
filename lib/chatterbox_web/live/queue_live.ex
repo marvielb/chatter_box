@@ -17,7 +17,7 @@ defmodule ChatterboxWeb.QueueLive do
       Queue.join(self(), %User{id: socket.id})
     end
 
-    {:ok, assign(socket, room_id: "hehe")}
+    {:ok, assign(socket, room_id: "")}
   end
 
   def handle_info({:room_ready, room_id}, socket) do
