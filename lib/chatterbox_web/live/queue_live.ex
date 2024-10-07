@@ -6,7 +6,7 @@ defmodule ChatterboxWeb.QueueLive do
 
   def render(assigns) do
     ~H"""
-    <div class="w-full text-center" id="queue-container" phx-hook="UserID">
+    <div class="w-full text-center" id="queue-container" phx-hook="Queue">
       <%= if @already_joined do %>
         <h1>You are already in a queue. Please use the initial tab instead of this one.</h1>
       <% else %>

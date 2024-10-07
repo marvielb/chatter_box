@@ -2,7 +2,7 @@
  * @type {import("phoenix_live_view").ViewHook}
  */
 let Hooks = {}
-Hooks.UserID = {
+Hooks.Queue = {
   mounted() {
     let userId = localStorage.getItem('user_id')
     if(!userId) {
