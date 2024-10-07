@@ -22,33 +22,28 @@ defmodule Chatterbox.Room do
   # Server
 
   def init(args) do
-    {:ok, %{messages: [], allowed_user_ids: args.allowed_user_ids, connected_users: %{}}}
+    {:ok, %{messages: [], members: args.members, connected_users: %{}}}
   end
 
-  def handle_cast(
-        {:send_message, user_pid, content},
-        %{connected_users: connected_users, messages: messages} = state
-      ) do
-    user_id = Map.get(connected_users, user_pid)
+  def handle_cast({:send_message, user_pid, content}, state) do
+    user_id = Map.get(state.connected_users, user_pid)
     message = %Message{sender_id: user_id, content: content}
 
-    updated_messages = [message | messages]
+    updated_messages = [message | state.messages]
 
-    for {pid, _} <- connected_users do
+    for {pid, _} <- state.connected_users do
       send(pid, {:updated_messages, updated_messages})
     end
 
     {:noreply, %{state | messages: updated_messages}}
   end
 
-  def handle_call(
-        {:join, user_id},
-        {pid, _},
-        %{allowed_user_ids: allowed_user_ids, connected_users: connected_users} = state
-      ) do
-    if user_id in allowed_user_ids do
+  def handle_call({:join, user_id}, {pid, _}, state) do
+    is_member = user_id in (state.members |> Map.values() |> Enum.map(& &1.id))
+
+    if is_member do
       Process.monitor(pid)
-      {:reply, :ok, %{state | connected_users: Map.put(connected_users, pid, user_id)}}
+      {:reply, :ok, %{state | connected_users: Map.put(state.connected_users, pid, user_id)}}
     else
       {:reply, :error, state}
     end
