@@ -7,8 +7,12 @@ defmodule Chatterbox.Room do
 
   # Client
 
-  def start_link(args) do
-    GenServer.start_link(__MODULE__, args)
+  def start_link(init_args, options \\ []) do
+    GenServer.start_link(__MODULE__, init_args, options)
+  end
+
+  def start(init_args, options \\ []) do
+    GenServer.start(__MODULE__, init_args, options)
   end
 
   def join(pid, user_id) do

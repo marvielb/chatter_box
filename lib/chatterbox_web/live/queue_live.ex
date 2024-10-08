@@ -28,6 +28,6 @@ defmodule ChatterboxWeb.QueueLive do
   end
 
   def handle_info({:room_ready, room_id}, socket) do
-    {:noreply, assign(socket, room_id: room_id)}
+    {:noreply, push_navigate(socket, to: ~p"/#{room_id}")}
   end
 end

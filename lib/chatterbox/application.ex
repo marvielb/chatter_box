@@ -17,6 +17,7 @@ defmodule Chatterbox.Application do
       # {Chatterbox.Worker, arg},
       {Chatterbox.Queue, :ok},
       # Start to serve requests, typically the last entry
+      {Registry, keys: :unique, name: Chatterbox.RoomRegistry},
       ChatterboxWeb.Endpoint
     ]
 
