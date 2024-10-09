@@ -22,7 +22,7 @@ defmodule ChatterboxWeb.RoomLive do
           </li>
         <% end %>
       </ul>
-      <.form for={@form} phx-submit="save">
+      <.form phx-change="validate" for={@form} phx-submit="save" id="chat-form">
         <.input type="text" field={@form[:message]} />
         <button>Send</button>
       </.form>
@@ -38,7 +38,7 @@ defmodule ChatterboxWeb.RoomLive do
           |> assign(
             room_id: room_id,
             room_pid: pid,
-            form: to_form(%{"form" => %{"message" => ""}}),
+            form: to_form(%{"message" => ""}),
             messages: []
           )
 
@@ -57,8 +57,17 @@ defmodule ChatterboxWeb.RoomLive do
   end
 
   def handle_event("save", %{"message" => message}, socket) do
-    Room.send_message(socket.assigns.room_pid, self(), message)
-    {:noreply, socket |> assign(form: to_form(%{"form" => %{"message" => ""}}))}
+    if String.length(message) == 0 do
+      {:noreply, socket}
+    else
+      Room.send_message(socket.assigns.room_pid, self(), message)
+      {:noreply, socket |> assign(:form, to_form(%{"message" => nil}))}
+    end
+  end
+
+  def handle_event("validate", params, socket) do
+    form = to_form(params)
+    {:noreply, socket |> assign(form: form)}
   end
 
   def handle_info({:updated_messages, updated_messages}, socket) do
