@@ -22,9 +22,30 @@ defmodule ChatterboxWeb.RoomLive do
           </li>
         <% end %>
       </ul>
-      <.form phx-change="validate" for={@form} phx-submit="save" id="chat-form">
-        <.input type="text" field={@form[:message]} />
-        <button>Send</button>
+      <.form class="mt-5" phx-change="validate" for={@form} phx-submit="save" id="chat-form">
+        <div class="flex justify-between w-full bg-zinc-100 max-h-12 py-3 px-4 rounded-md gap-3">
+          <input
+            class="text-sm p-1 w-full bg-transparent border-transparent focus:border-transparent focus:ring-0 placeholder-stone-600 text-stone-900"
+            type="text"
+            name={@form[:message].name}
+            value={@form[:message].value}
+            placeholder="Type a message"
+          />
+          <button>
+            <svg
+              width="19"
+              height="16"
+              viewBox="0 0 19 16"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M0.674349 15.5L18.166 8L0.674349 0.5L0.666016 6.33333L13.166 8L0.666016 9.66667L0.674349 15.5Z"
+                fill="#D0D0D0"
+              />
+            </svg>
+          </button>
+        </div>
       </.form>
     </div>
     """
