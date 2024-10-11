@@ -4,13 +4,16 @@ defmodule ChatterboxWeb.RoomLive do
 
   def render(assigns) do
     ~H"""
-    <div class="flex flex-col gap-2 h-full">
-      <div class="flex flex-col gap-1">
-        <div class="bg-amber-800 w-full aspect-video rounded-lg">&nbsp</div>
-        <div class="bg-amber-800 w-full aspect-video rounded-lg">&nbsp</div>
+    <div class="flex flex-col gap-2 h-full sm:flex-row">
+      <div
+        id="videos-container"
+        class="flex flex-col gap-1 max-h-full max-w-full w-full h-full sm:flex-1"
+      >
+        <div class="bg-amber-800 w-full h-full rounded-lg">&nbsp</div>
+        <div class="bg-amber-800 w-full h-full rounded-lg">&nbsp</div>
       </div>
       <div
-        class="flex-grow flex flex-col justify-end max-h-full overflow-auto"
+        class="flex-grow flex flex-col justify-end max-h-full overflow-auto max-w-sm"
         id="chat-container"
         phx-hook="Queue"
       >
