@@ -41,12 +41,11 @@ defmodule Chatterbox.Queue do
   end
 
   def handle_info({:DOWN, _ref, :process, pid, _reason}, state) do
-    {previous_view_pid, _} = state.previous_view
-
-    if previous_view_pid == pid do
+    with {previous_view_pid, _} <- state.previous_view,
+         ^pid <- previous_view_pid do
       {:noreply, %{state | previous_view: nil}}
     else
-      {:noreply, state}
+      _ -> {:noreply, state}
     end
   end
 
