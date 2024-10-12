@@ -5,17 +5,17 @@ defmodule ChatterboxWeb.RoomLive do
   def render(assigns) do
     ~H"""
     <div class="flex flex-col gap-2 h-full sm:flex-row">
-      <div
-        id="videos-container"
-        class="flex flex-col gap-1 max-h-full max-w-full w-full h-full sm:flex-1"
-      >
-        <div class="bg-amber-800 w-full h-full rounded-lg">&nbsp</div>
-        <div class="bg-amber-800 w-full h-full rounded-lg">&nbsp</div>
+      <div class="flex flex-col gap-1 max-h-full max-w-full w-fit sm:flex-1">
+        <div class="bg-amber-800  h-full rounded-lg">
+          <video id="webcamVideo" phx-hook="Webcam" autoplay playsinline></video>
+        </div>
+        <div class="bg-amber-800 w-full h-full rounded-lg">
+          <video id="remoteVideo" autoplay playsinline></video>
+        </div>
       </div>
       <div
         class="flex-grow flex flex-col justify-end max-h-full overflow-auto max-w-sm"
         id="chat-container"
-        phx-hook="Queue"
       >
         <ul class="flex flex-col-reverse gap-1 overflow-y-auto">
           <%= for message <- @messages do %>
@@ -70,7 +70,8 @@ defmodule ChatterboxWeb.RoomLive do
             room_id: room_id,
             room_pid: pid,
             form: to_form(%{"message" => ""}),
-            messages: []
+            messages: [],
+            offer: %{}
           )
 
         _ ->
@@ -82,8 +83,12 @@ defmodule ChatterboxWeb.RoomLive do
 
   def handle_event("join", %{"user_id" => user_id}, socket) do
     case Room.join(socket.assigns.room_pid, user_id) do
-      {:ok, messages} -> {:noreply, socket |> assign(user_id: user_id, messages: messages)}
-      _ -> {:noreply, socket |> push_navigate(to: ~p"/")}
+      {:ok, messages, role} ->
+        socket = socket |> assign(user_id: user_id, messages: messages) |> maybe_requester(role)
+        {:noreply, socket}
+
+      _ ->
+        {:noreply, socket |> push_navigate(to: ~p"/")}
     end
   end
 
@@ -101,7 +106,19 @@ defmodule ChatterboxWeb.RoomLive do
     {:noreply, socket |> assign(form: form)}
   end
 
+  def handle_event("offer_info", offer, socket) do
+    {:noreply, socket |> assign(offer: offer)}
+  end
+
   def handle_info({:updated_messages, updated_messages}, socket) do
     {:noreply, socket |> assign(messages: updated_messages)}
+  end
+
+  defp maybe_requester(socket, role) do
+    if role == :requester do
+      socket |> push_event("create_offer", %{})
+    else
+      socket
+    end
   end
 end

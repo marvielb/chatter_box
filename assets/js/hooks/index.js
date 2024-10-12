@@ -1,4 +1,5 @@
 import QueueHooks from "./queue";
+import RoomHooks from "./room";
 
-let Hooks = {...QueueHooks};
-export default Hooks
+let Hooks = { ...QueueHooks, ...RoomHooks };
+export default Hooks;

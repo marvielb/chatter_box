@@ -48,7 +48,13 @@ defmodule Chatterbox.Room do
     if is_member do
       Process.monitor(pid)
 
-      {:reply, {:ok, state.messages},
+      role =
+        case state.members |> Map.get(:requester) |> Map.get(:id) do
+          ^user_id -> :requester
+          _ -> :responder
+        end
+
+      {:reply, {:ok, state.messages, role},
        %{state | connected_users: Map.put(state.connected_users, pid, user_id)}}
     else
       {:reply, :error, state}
