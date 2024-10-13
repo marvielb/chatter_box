@@ -26,8 +26,8 @@ Hooks.Webcam = {
       };
       this.pushEvent("offer_info", offer);
     });
-    this.handleEvent("handle_offer", async (offer) => {
-      console.log("handling_offer..");
+    this.handleEvent("set_offer", async (offer) => {
+      console.log("setting_offer..");
       await pc.setRemoteDescription(new RTCSessionDescription(offer));
 
       const answerDescription = await pc.createAnswer();

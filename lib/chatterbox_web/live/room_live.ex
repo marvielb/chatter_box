@@ -70,8 +70,7 @@ defmodule ChatterboxWeb.RoomLive do
             room_id: room_id,
             room_pid: pid,
             form: to_form(%{"message" => ""}),
-            messages: [],
-            offer: %{}
+            messages: []
           )
 
         _ ->
@@ -83,8 +82,10 @@ defmodule ChatterboxWeb.RoomLive do
 
   def handle_event("join", %{"user_id" => user_id}, socket) do
     case Room.join(socket.assigns.room_pid, user_id) do
-      {:ok, messages, role} ->
-        socket = socket |> assign(user_id: user_id, messages: messages) |> maybe_requester(role)
+      {:ok, messages, role, offer} ->
+        socket =
+          socket |> assign(user_id: user_id, messages: messages) |> send_events(role, offer)
+
         {:noreply, socket}
 
       _ ->
@@ -107,18 +108,23 @@ defmodule ChatterboxWeb.RoomLive do
   end
 
   def handle_event("offer_info", offer, socket) do
-    {:noreply, socket |> assign(offer: offer)}
+    Room.set_offer(socket.assigns.room_pid, self(), offer)
+    {:noreply, socket}
   end
 
   def handle_info({:updated_messages, updated_messages}, socket) do
     {:noreply, socket |> assign(messages: updated_messages)}
   end
 
-  defp maybe_requester(socket, role) do
+  defp send_events(socket, role, offer) do
     if role == :requester do
       socket |> push_event("create_offer", %{})
     else
-      socket
+      if offer != nil do
+        socket |> push_event("set_offer", offer)
+      else
+        socket
+      end
     end
   end
 end

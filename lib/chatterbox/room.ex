@@ -4,6 +4,7 @@ defmodule Chatterbox.Room do
   """
   alias Chatterbox.Message
   use GenServer
+  @prefix [:chatterbox, :room, :call]
 
   # Client
 
@@ -19,6 +20,10 @@ defmodule Chatterbox.Room do
     GenServer.call(pid, {:join, user_id})
   end
 
+  def set_offer(pid, user_pid, offer) do
+    GenServer.cast(pid, {:set_offer, user_pid, offer})
+  end
+
   def send_message(pid, user_pid, content) do
     GenServer.cast(pid, {:send_message, user_pid, content})
   end
@@ -26,7 +31,7 @@ defmodule Chatterbox.Room do
   # Server
 
   def init(args) do
-    {:ok, %{messages: [], members: args.members, connected_users: %{}}}
+    {:ok, %{messages: [], members: args.members, connected_users: %{}, offer: nil}}
   end
 
   def handle_cast({:send_message, user_pid, content}, state) do
@@ -42,7 +47,23 @@ defmodule Chatterbox.Room do
     {:noreply, %{state | messages: updated_messages}}
   end
 
+  def handle_cast({:set_offer, user_pid, offer}, state) do
+    {_, other_user_pids} = state.connected_users |> Map.pop(user_pid)
+
+    for {pid, _} <- other_user_pids do
+      send(pid, {:updated_offer, offer})
+    end
+
+    {:noreply, %{state | offer: offer}}
+  end
+
   def handle_call({:join, user_id}, {pid, _}, state) do
+    :telemetry.execute(
+      @prefix ++ [:join],
+      %{},
+      %{user_id: user_id, pid: pid, state: state}
+    )
+
     is_member = user_id in (state.members |> Map.values() |> Enum.map(& &1.id))
 
     if is_member do
@@ -54,7 +75,7 @@ defmodule Chatterbox.Room do
           _ -> :responder
         end
 
-      {:reply, {:ok, state.messages, role},
+      {:reply, {:ok, state.messages, role, state.offer},
        %{state | connected_users: Map.put(state.connected_users, pid, user_id)}}
     else
       {:reply, :error, state}
