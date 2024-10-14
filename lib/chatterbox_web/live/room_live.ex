@@ -38,6 +38,7 @@ defmodule ChatterboxWeb.RoomLive do
               type="text"
               name={@form[:message].name}
               value={@form[:message].value}
+              phx-debounce="blur"
               placeholder="Type a message"
             />
             <button>
