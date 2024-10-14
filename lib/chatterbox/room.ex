@@ -24,8 +24,12 @@ defmodule Chatterbox.Room do
     GenServer.cast(pid, {:set_offer, user_pid, offer})
   end
 
-  def set_answer(pid, user_pid, offer) do
-    GenServer.cast(pid, {:set_answer, user_pid, offer})
+  def set_answer(pid, user_pid, answer) do
+    GenServer.cast(pid, {:set_answer, user_pid, answer})
+  end
+
+  def set_candidate(pid, user_pid, candidate) do
+    GenServer.cast(pid, {:set_candidate, user_pid, candidate})
   end
 
   def send_message(pid, user_pid, content) do
@@ -69,6 +73,16 @@ defmodule Chatterbox.Room do
     end
 
     {:noreply, %{state | answer: answer}}
+  end
+
+  def handle_cast({:set_candidate, user_pid, candidate}, state) do
+    {_, other_user_pids} = state.connected_users |> Map.pop(user_pid)
+
+    for {pid, _} <- other_user_pids do
+      send(pid, {:updated_candidate, candidate})
+    end
+
+    {:noreply, state}
   end
 
   def handle_call({:join, user_id}, {pid, _}, state) do

@@ -46,6 +46,12 @@ Hooks.Webcam = {
       const answerDescription = new RTCSessionDescription(answer);
       pc.setRemoteDescription(answerDescription);
     });
+
+    this.handleEvent("set_candidate", async (candidate) => {
+      console.log("setting_candidate..");
+      const rtccandidate = new RTCIceCandidate(candidate);
+      pc.addIceCandidate(rtccandidate);
+    });
     localStream = await navigator.mediaDevices.getUserMedia({
       video: true,
       audio: true,
