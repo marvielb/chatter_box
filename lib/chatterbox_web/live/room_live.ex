@@ -112,8 +112,21 @@ defmodule ChatterboxWeb.RoomLive do
     {:noreply, socket}
   end
 
+  def handle_event("answer_info", offer, socket) do
+    Room.set_answer(socket.assigns.room_pid, self(), offer)
+    {:noreply, socket}
+  end
+
   def handle_info({:updated_messages, updated_messages}, socket) do
     {:noreply, socket |> assign(messages: updated_messages)}
+  end
+
+  def handle_info({:updated_answer, answer}, socket) do
+    {:noreply, socket |> push_event("set_answer", answer)}
+  end
+
+  def handle_info({:updated_offer, offer}, socket) do
+    {:noreply, socket |> push_event("set_offer", offer)}
   end
 
   defp send_events(socket, role, offer) do
