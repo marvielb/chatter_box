@@ -1,10 +1,18 @@
 defmodule Chatterbox.Room do
+  defmodule State do
+    @moduledoc """
+    Encapsulates the room's state
+    """
+    defstruct [:messages, :user_roles, :connected_users, :offer, :answer]
+  end
+
   @moduledoc """
-  This module is responsible on managing messages and sending them back to the user
+  This module is responsible on managing messages and sending them back to the user.
+  Also holds information about the WebRTC info for both users and able to propagate it to one another.
   """
   alias Chatterbox.Message
+  alias Chatterbox.User
   use GenServer
-  @prefix [:chatterbox, :room, :call]
 
   # Client
 
@@ -20,31 +28,52 @@ defmodule Chatterbox.Room do
     GenServer.call(pid, {:join, user_id})
   end
 
-  def set_offer(pid, user_pid, offer) do
-    GenServer.cast(pid, {:set_offer, user_pid, offer})
+  def set_offer(pid, offer) do
+    GenServer.cast(pid, {:set_offer, offer})
   end
 
-  def set_answer(pid, user_pid, answer) do
-    GenServer.cast(pid, {:set_answer, user_pid, answer})
+  def set_answer(pid, answer) do
+    GenServer.cast(pid, {:set_answer, answer})
   end
 
-  def set_candidate(pid, user_pid, candidate) do
-    GenServer.cast(pid, {:set_candidate, user_pid, candidate})
+  def set_candidate(pid, candidate) do
+    GenServer.cast(pid, {:set_candidate, candidate})
   end
 
   def send_message(pid, user_pid, content) do
     GenServer.cast(pid, {:send_message, user_pid, content})
   end
 
+  def get_messages(pid) do
+    GenServer.call(pid, :get_messages)
+  end
+
   # Server
 
   def init(args) do
-    {:ok, %{messages: [], members: args.members, connected_users: %{}, offer: nil, answer: nil}}
+    {:ok, %State{messages: [], user_roles: args.user_roles, connected_users: %{}}}
+  end
+
+  def handle_call({:join, user_id}, {pid, _}, %State{} = state) do
+    case Map.get(state.user_roles, user_id) do
+      nil ->
+        {:reply, :error, state}
+
+      role ->
+        Process.monitor(pid)
+
+        {:reply, {:ok, role},
+         %{state | connected_users: Map.put(state.connected_users, pid, %User{id: user_id})}}
+    end
+  end
+
+  def handle_call(:get_messages, _, %State{} = state) do
+    {:reply, state.messages, state}
   end
 
   def handle_cast({:send_message, user_pid, content}, state) do
-    user_id = Map.get(state.connected_users, user_pid)
-    message = %Message{sender_id: user_id, content: content}
+    user = Map.get(state.connected_users, user_pid)
+    message = %Message{sender_id: user.id, content: content}
 
     updated_messages = [message | state.messages]
 
@@ -55,59 +84,28 @@ defmodule Chatterbox.Room do
     {:noreply, %{state | messages: updated_messages}}
   end
 
-  def handle_cast({:set_offer, user_pid, offer}, state) do
-    {_, other_user_pids} = state.connected_users |> Map.pop(user_pid)
-
-    for {pid, _} <- other_user_pids do
+  def handle_cast({:set_offer, offer}, %State{} = state) do
+    for {pid, _} <- state.connected_users do
       send(pid, {:updated_offer, offer})
     end
 
     {:noreply, %{state | offer: offer}}
   end
 
-  def handle_cast({:set_answer, user_pid, answer}, state) do
-    {_, other_user_pids} = state.connected_users |> Map.pop(user_pid)
-
-    for {pid, _} <- other_user_pids do
+  def handle_cast({:set_answer, answer}, %State{} = state) do
+    for {pid, _} <- state.connected_users do
       send(pid, {:updated_answer, answer})
     end
 
     {:noreply, %{state | answer: answer}}
   end
 
-  def handle_cast({:set_candidate, user_pid, candidate}, state) do
-    {_, other_user_pids} = state.connected_users |> Map.pop(user_pid)
-
-    for {pid, _} <- other_user_pids do
+  def handle_cast({:set_candidate, candidate}, %State{} = state) do
+    for {pid, _} <- state.connected_users do
       send(pid, {:updated_candidate, candidate})
     end
 
     {:noreply, state}
-  end
-
-  def handle_call({:join, user_id}, {pid, _}, state) do
-    :telemetry.execute(
-      @prefix ++ [:join],
-      %{},
-      %{user_id: user_id, pid: pid, state: state}
-    )
-
-    is_member = user_id in (state.members |> Map.values() |> Enum.map(& &1.id))
-
-    if is_member do
-      Process.monitor(pid)
-
-      role =
-        case state.members |> Map.get(:requester) |> Map.get(:id) do
-          ^user_id -> :requester
-          _ -> :responder
-        end
-
-      {:reply, {:ok, state.messages, role, state.offer},
-       %{state | connected_users: Map.put(state.connected_users, pid, user_id)}}
-    else
-      {:reply, :error, state}
-    end
   end
 
   def handle_info({:DOWN, _ref, :process, pid, _reason}, state) do

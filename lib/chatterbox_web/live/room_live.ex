@@ -109,7 +109,7 @@ defmodule ChatterboxWeb.RoomLive do
   end
 
   def handle_event("offer_info", offer, socket) do
-    Room.set_offer(socket.assigns.room_pid, self(), offer)
+    Room.set_offer(socket.assigns.room_pid, offer)
     {:noreply, socket}
   end
 
