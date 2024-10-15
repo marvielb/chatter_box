@@ -71,7 +71,10 @@ defmodule ChatterboxWeb.RoomLive do
             room_id: room_id,
             room_pid: pid,
             form: to_form(%{"message" => ""}),
-            messages: []
+            messages: [],
+            candidate: nil,
+            role: nil,
+            user_id: nil
           )
 
         _ ->
@@ -81,11 +84,24 @@ defmodule ChatterboxWeb.RoomLive do
     {:ok, socket}
   end
 
+  def handle_event("save", %{"message" => message}, socket) do
+    if String.length(message) == 0 do
+      {:noreply, socket}
+    else
+      Room.send_message(socket.assigns.room_pid, socket.assigns.user_id, message)
+      {:noreply, socket |> assign(:form, to_form(%{"message" => nil}))}
+    end
+  end
+
   def handle_event("join", %{"user_id" => user_id}, socket) do
     case Room.join(socket.assigns.room_pid, user_id) do
-      {:ok, messages, role, offer} ->
+      {:ok, role} ->
         socket =
-          socket |> assign(user_id: user_id, messages: messages) |> send_events(role, offer)
+          socket
+          |> assign(user_id: user_id)
+          |> assign(messages: Room.get_messages(socket.assigns.room_pid))
+          |> assign(role: role)
+          |> send_events(role)
 
         {:noreply, socket}
 
@@ -94,60 +110,55 @@ defmodule ChatterboxWeb.RoomLive do
     end
   end
 
-  def handle_event("save", %{"message" => message}, socket) do
-    if String.length(message) == 0 do
-      {:noreply, socket}
-    else
-      Room.send_message(socket.assigns.room_pid, self(), message)
-      {:noreply, socket |> assign(:form, to_form(%{"message" => nil}))}
-    end
-  end
-
   def handle_event("validate", params, socket) do
     form = to_form(params)
     {:noreply, socket |> assign(form: form)}
   end
 
-  def handle_event("offer_info", offer, socket) do
+  def handle_event("offer_info", offer, socket) when socket.assigns.role == :requester do
     Room.set_offer(socket.assigns.room_pid, offer)
     {:noreply, socket}
   end
 
-  def handle_event("answer_info", answer, socket) do
-    Room.set_answer(socket.assigns.room_pid, self(), answer)
+  def handle_event("answer_info", answer, socket) when socket.assigns.role == :responder do
+    Room.set_answer(socket.assigns.room_pid, answer)
     {:noreply, socket}
   end
 
   def handle_event("candidate_info", candidate, socket) do
-    Room.set_candidate(socket.assigns.room_pid, self(), candidate)
-    {:noreply, socket}
+    Room.set_candidate(socket.assigns.room_pid, candidate)
+    {:noreply, socket |> assign(candidate: candidate)}
   end
 
   def handle_info({:updated_messages, updated_messages}, socket) do
     {:noreply, socket |> assign(messages: updated_messages)}
   end
 
-  def handle_info({:updated_answer, answer}, socket) do
-    {:noreply, socket |> push_event("set_answer", answer)}
+  def handle_info({:updated_offer, offer}, socket) do
+    case socket.assigns.role do
+      :responder -> {:noreply, socket |> push_event("set_offer", offer)}
+      _ -> {:noreply, socket}
+    end
   end
 
-  def handle_info({:updated_offer, offer}, socket) do
-    {:noreply, socket |> push_event("set_offer", offer)}
+  def handle_info({:updated_answer, answer}, socket) do
+    case socket.assigns.role do
+      :requester -> {:noreply, socket |> push_event("set_answer", answer)}
+      _ -> {:noreply, socket}
+    end
   end
 
   def handle_info({:updated_candidate, candidate}, socket) do
-    {:noreply, socket |> push_event("set_candidate", candidate)}
+    case socket.assigns.candidate do
+      ^candidate -> {:noreply, socket}
+      _ -> {:noreply, socket |> push_event("set_candidate", candidate)}
+    end
   end
 
-  defp send_events(socket, role, offer) do
-    if role == :requester do
-      socket |> push_event("create_offer", %{})
-    else
-      if offer != nil do
-        socket |> push_event("set_offer", offer)
-      else
-        socket
-      end
+  defp send_events(socket, role) do
+    case role do
+      :requester -> socket |> push_event("create_offer", %{})
+      _ -> socket
     end
   end
 end

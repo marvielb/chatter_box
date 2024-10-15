@@ -21,7 +21,7 @@ defmodule Chatterbox.RoomTest do
 
   test "Receive an updated copy of the conversation upon sending a message", %{room_pid: pid} do
     Room.join(pid, "user_1")
-    assert Room.send_message(pid, self(), "This is a test message")
+    assert Room.send_message(pid, "user_1", "This is a test message")
 
     assert_receive {:updated_messages,
                     [%Message{sender_id: "user_1", content: "This is a test message"}]}

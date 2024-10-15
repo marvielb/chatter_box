@@ -40,8 +40,8 @@ defmodule Chatterbox.Room do
     GenServer.cast(pid, {:set_candidate, candidate})
   end
 
-  def send_message(pid, user_pid, content) do
-    GenServer.cast(pid, {:send_message, user_pid, content})
+  def send_message(pid, user_id, content) do
+    GenServer.cast(pid, {:send_message, user_id, content})
   end
 
   def get_messages(pid) do
@@ -71,9 +71,8 @@ defmodule Chatterbox.Room do
     {:reply, state.messages, state}
   end
 
-  def handle_cast({:send_message, user_pid, content}, state) do
-    user = Map.get(state.connected_users, user_pid)
-    message = %Message{sender_id: user.id, content: content}
+  def handle_cast({:send_message, user_id, content}, state) do
+    message = %Message{sender_id: user_id, content: content}
 
     updated_messages = [message | state.messages]
 
