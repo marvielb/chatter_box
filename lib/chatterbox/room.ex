@@ -51,6 +51,8 @@ defmodule Chatterbox.Room do
   # Server
 
   def init(args) do
+    no_user_check_duration = args[:no_user_check_duration] || 5000
+    Process.send_after(self(), :no_user_check, no_user_check_duration)
     {:ok, %State{messages: [], user_roles: args.user_roles, connected_users: %{}}}
   end
 
@@ -109,5 +111,13 @@ defmodule Chatterbox.Room do
 
   def handle_info({:DOWN, _ref, :process, _pid, _reason}, state) do
     {:stop, :normal, state}
+  end
+
+  def handle_info(:no_user_check, %State{} = state) do
+    if map_size(state.connected_users) < 2 do
+      {:stop, :normal, state}
+    else
+      {:noreply, state}
+    end
   end
 end

@@ -1,12 +1,18 @@
 defmodule Chatterbox.RoomTest do
   use ExUnit.Case, async: true
   alias Chatterbox.{Message, Room}
+  @no_user_check_duration 50
 
   setup do
     user_1 = "user_1"
     user_2 = "user_2"
     user_roles = %{user_1 => :requester, user_2 => :responder}
-    pid = start_link_supervised!({Room, %{user_roles: user_roles}})
+
+    pid =
+      start_link_supervised!(
+        {Room, %{user_roles: user_roles, no_user_check_duration: @no_user_check_duration}}
+      )
+
     %{room_pid: pid}
   end
 
@@ -51,5 +57,23 @@ defmodule Chatterbox.RoomTest do
     Room.join(pid, "user_1")
     Room.set_candidate(pid, "one of the candidates of all time!")
     assert_receive {:updated_candidate, "one of the candidates of all time!"}
+  end
+
+  test "Crash the sever after the set interval if no users joined", %{room_pid: pid} do
+    Process.sleep(@no_user_check_duration + 1)
+    assert Process.alive?(pid) == false
+  end
+
+  test "Crash the sever after the set interval if the members are not complete", %{room_pid: pid} do
+    Room.join(pid, "user_1")
+    Process.sleep(@no_user_check_duration + 1)
+    assert Process.alive?(pid) == false
+  end
+
+  test "The server should be alive if all of the members are present", %{room_pid: pid} do
+    Room.join(pid, "user_1")
+    spawn_link(fn _ -> Room.join(pid, "user_2") end)
+    Process.sleep(@no_user_check_duration + 1)
+    assert Process.alive?(pid) == true
   end
 end
