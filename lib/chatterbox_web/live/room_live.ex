@@ -66,6 +66,8 @@ defmodule ChatterboxWeb.RoomLive do
     socket =
       case Registry.lookup(Chatterbox.RoomRegistry, room_id) do
         [{pid, nil}] ->
+          Process.monitor(pid)
+
           socket
           |> assign(
             room_id: room_id,
@@ -155,8 +157,12 @@ defmodule ChatterboxWeb.RoomLive do
     end
   end
 
-  def handle_info(:room_down, socket) do
-    {:noreply, socket |> push_navigate(to: ~p"/")}
+  def handle_info({:DOWN, _ref, :process, pid, _reason}, socket) do
+    if pid == socket.assigns.room_pid do
+      {:noreply, socket |> push_navigate(to: ~p"/")}
+    else
+      {:noreply, socket}
+    end
   end
 
   defp send_events(socket, role) do
