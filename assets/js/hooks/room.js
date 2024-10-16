@@ -69,9 +69,7 @@ Hooks.Webcam = {
       pc.addTrack(track, localStream);
     });
     // Get local candidate and let the server know
-    console.log("setting onicecandidate");
     pc.onicecandidate = (event) => {
-      console.log("onicecandidate called!");
       event.candidate &&
         this.pushEvent("candidate_info", event.candidate.toJSON());
     };
