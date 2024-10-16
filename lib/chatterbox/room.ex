@@ -109,6 +109,11 @@ defmodule Chatterbox.Room do
 
   def handle_info({:DOWN, _ref, :process, pid, _reason}, state) do
     {_, updated_connected_users} = Map.pop(state.connected_users, pid)
-    {:noreply, %{state | connected_users: updated_connected_users}}
+
+    for {pid, _} <- updated_connected_users do
+      send(pid, :room_down)
+    end
+
+    {:stop, :normal, state}
   end
 end

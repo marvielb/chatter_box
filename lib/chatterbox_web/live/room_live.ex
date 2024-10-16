@@ -155,6 +155,10 @@ defmodule ChatterboxWeb.RoomLive do
     end
   end
 
+  def handle_info(:room_down, socket) do
+    {:noreply, socket |> push_navigate(to: ~p"/")}
+  end
+
   defp send_events(socket, role) do
     case role do
       :requester -> socket |> push_event("create_offer", %{})
