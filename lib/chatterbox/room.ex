@@ -14,6 +14,8 @@ defmodule Chatterbox.Room do
   alias Chatterbox.User
   use GenServer
 
+  @max_messages 100
+
   # Client
 
   def start_link(init_args, options \\ []) do
@@ -76,7 +78,12 @@ defmodule Chatterbox.Room do
   def handle_cast({:send_message, user_id, content}, state) do
     message = %Message{sender_id: user_id, content: content}
 
-    updated_messages = [message | state.messages]
+    updated_messages =
+      if Enum.count(state.messages) < @max_messages do
+        [message | state.messages]
+      else
+        [message | List.delete_at(state.messages, -1)]
+      end
 
     for {pid, _} <- state.connected_users do
       send(pid, {:updated_messages, updated_messages})
