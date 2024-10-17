@@ -6,7 +6,7 @@ defmodule ChatterboxWeb.RoomLive do
     ~H"""
     <div class="flex flex-col gap-2 h-full sm:flex-row">
       <div class="flex flex-col gap-1 max-h-[50%] max-w-full w-fit sm:flex-1">
-        <div class="bg-amber-800 max-h-full rounded-lg">
+        <div class="bg-amber-800 max-h-[50%] sm:max-h-full rounded-lg">
           <video
             id="webcamVideo"
             class="w-full h-auto max-h-full"
@@ -16,7 +16,7 @@ defmodule ChatterboxWeb.RoomLive do
           >
           </video>
         </div>
-        <div class="bg-amber-800 w-full max-h-full rounded-lg">
+        <div class="bg-amber-800 w-full max-h-[50%] sm:max-h-full rounded-lg">
           <video id="remoteVideo" class="w-full h-auto max-h-full" autoplay playsinline></video>
         </div>
       </div>
