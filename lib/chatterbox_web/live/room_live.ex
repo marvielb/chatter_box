@@ -1,20 +1,14 @@
 defmodule ChatterboxWeb.RoomLive do
   alias Chatterbox.Room
   use ChatterboxWeb, :live_view
+  @max_chat_length 50
 
   def render(assigns) do
     ~H"""
-    <div class="flex flex-col gap-2 h-full sm:flex-row">
+    <div id="room-container" class="flex flex-col gap-2 h-full sm:flex-row" phx-hook="Webcam">
       <div class="flex flex-col gap-1 max-h-[50%] max-w-full w-fit sm:flex-1">
         <div class="bg-amber-800 max-h-[50%] sm:max-h-full rounded-lg">
-          <video
-            id="webcamVideo"
-            class="w-full h-auto max-h-full"
-            phx-hook="Webcam"
-            autoplay
-            playsinline
-          >
-          </video>
+          <video id="webcamVideo" class="w-full h-auto max-h-full" autoplay playsinline></video>
         </div>
         <div class="bg-amber-800 w-full max-h-[50%] sm:max-h-full rounded-lg">
           <video id="remoteVideo" class="w-full h-auto max-h-full" autoplay playsinline></video>
@@ -31,7 +25,7 @@ defmodule ChatterboxWeb.RoomLive do
                 if(message.sender_id == @user_id,
                   do: ["bg-amber-950 text-white rounded-bl-2xl"],
                   else: ["bg-zinc-300 text-black rounded-br-2xl"]
-                ) ++ ["rounded-t-2xl w-fit px-3 py-2"]
+                ) ++ ["rounded-t-2xl w-fit px-3 py-2  [overflow-wrap:anywhere] "]
               }>
                 <%= message.content %>
               </div>
@@ -41,6 +35,7 @@ defmodule ChatterboxWeb.RoomLive do
         <.form class="mt-5" phx-change="validate" for={@form} phx-submit="save" id="chat-form">
           <div class="flex justify-between w-full bg-zinc-100 max-h-12 py-3 px-4 rounded-md gap-3">
             <input
+              maxlength={@max_chat_length}
               class="text-sm p-1 w-full bg-transparent border-transparent focus:border-transparent focus:ring-0 placeholder-stone-600 text-stone-900"
               type="text"
               name={@form[:message].name}
@@ -83,7 +78,8 @@ defmodule ChatterboxWeb.RoomLive do
             messages: [],
             candidate: nil,
             role: nil,
-            user_id: nil
+            user_id: nil,
+            max_chat_length: @max_chat_length
           )
 
         _ ->
@@ -94,7 +90,7 @@ defmodule ChatterboxWeb.RoomLive do
   end
 
   def handle_event("save", %{"message" => message}, socket) do
-    if String.length(message) == 0 do
+    if String.length(message) == 0 or String.length(message) > @max_chat_length do
       {:noreply, socket}
     else
       Room.send_message(socket.assigns.room_pid, socket.assigns.user_id, message)
