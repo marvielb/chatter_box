@@ -5,12 +5,19 @@ defmodule ChatterboxWeb.RoomLive do
   def render(assigns) do
     ~H"""
     <div class="flex flex-col gap-2 h-full sm:flex-row">
-      <div class="flex flex-col gap-1 max-h-full max-w-full w-fit sm:flex-1">
-        <div class="bg-amber-800  h-full rounded-lg">
-          <video id="webcamVideo" phx-hook="Webcam" autoplay playsinline></video>
+      <div class="flex flex-col gap-1 max-h-[50%] max-w-full w-fit sm:flex-1">
+        <div class="bg-amber-800 max-h-full rounded-lg">
+          <video
+            id="webcamVideo"
+            class="w-full h-auto max-h-full"
+            phx-hook="Webcam"
+            autoplay
+            playsinline
+          >
+          </video>
         </div>
-        <div class="bg-amber-800 w-full h-full rounded-lg">
-          <video id="remoteVideo" autoplay playsinline></video>
+        <div class="bg-amber-800 w-full max-h-full rounded-lg">
+          <video id="remoteVideo" class="w-full h-auto max-h-full" autoplay playsinline></video>
         </div>
       </div>
       <div
