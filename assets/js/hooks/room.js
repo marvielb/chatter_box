@@ -1,4 +1,3 @@
-let localStream = null;
 let remoteStream = null;
 const servers = {
   iceServers: [
@@ -52,21 +51,17 @@ Hooks.Webcam = {
       const rtccandidate = new RTCIceCandidate(candidate);
       pc.addIceCandidate(rtccandidate);
     });
-    localStream = await navigator.mediaDevices.getUserMedia({
-      video: true,
-      audio: true,
-    });
     remoteStream = new MediaStream();
     const webcamVideo = document.getElementById("webcamVideo");
-    webcamVideo.srcObject = localStream;
+    webcamVideo.srcObject = window.localStream;
     webcamVideo.muted = true;
 
     const remoteVideo = document.getElementById("remoteVideo");
     remoteVideo.srcObject = remoteStream;
 
     // Push tracks from local stream to peer connection
-    localStream.getTracks().forEach((track) => {
-      pc.addTrack(track, localStream);
+    window.localStream.getTracks().forEach((track) => {
+      pc.addTrack(track, window.localStream);
     });
     // Get local candidate and let the server know
     pc.onicecandidate = (event) => {
