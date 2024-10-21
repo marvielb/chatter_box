@@ -50,6 +50,10 @@ defmodule Chatterbox.Room do
     GenServer.call(pid, :get_messages)
   end
 
+  def get_offer(pid) do
+    GenServer.call(pid, :get_offer)
+  end
+
   # Server
 
   def init(args) do
@@ -73,6 +77,10 @@ defmodule Chatterbox.Room do
 
   def handle_call(:get_messages, _, %State{} = state) do
     {:reply, state.messages, state}
+  end
+
+  def handle_call(:get_offer, _, %State{} = state) do
+    {:reply, state.offer, state}
   end
 
   def handle_cast({:send_message, user_id, content}, state) do

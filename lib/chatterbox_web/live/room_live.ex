@@ -170,8 +170,14 @@ defmodule ChatterboxWeb.RoomLive do
 
   defp send_events(socket, role) do
     case role do
-      :requester -> socket |> push_event("create_offer", %{})
-      _ -> socket
+      :requester ->
+        socket |> push_event("create_offer", %{})
+
+      :responder ->
+        case Room.get_offer(socket.assigns.room_pid) do
+          nil -> socket
+          offer -> socket |> push_event("set_offer", offer)
+        end
     end
   end
 end

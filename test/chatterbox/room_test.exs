@@ -76,4 +76,12 @@ defmodule Chatterbox.RoomTest do
     Process.sleep(@no_user_check_duration + 1)
     assert Process.alive?(pid) == true
   end
+
+  test "Able to fetch updated offer", %{room_pid: pid} do
+    Room.join(pid, "user_1")
+    Room.set_offer(pid, "This is a one of the offer of all time!")
+
+    assert_receive {:updated_offer, offer}
+    assert offer == Room.get_offer(pid)
+  end
 end
