@@ -10,10 +10,14 @@ Hooks.Queue = {
       localStorage.setItem("user_id", userId);
     }
     //Wait for the camera to be ready before joining the queue
-    await navigator.mediaDevices.getUserMedia({
-      video: true,
-      audio: true,
-    });
+    try {
+      await navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: true,
+      });
+    } catch (_) {
+      //do nothing, it's okay if the user does not want to permit camera
+    }
 
     this.pushEvent("join", { user_id: userId });
   },

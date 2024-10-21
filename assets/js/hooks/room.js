@@ -61,22 +61,30 @@ Hooks.Webcam = {
         cachedCandidates.push(candidate);
       }
     });
-    localStream = await navigator.mediaDevices.getUserMedia({
-      video: true,
-      audio: true,
-    });
-    remoteStream = new MediaStream();
-    const webcamVideo = document.getElementById("webcamVideo");
-    webcamVideo.srcObject = localStream;
-    webcamVideo.muted = true;
+    try {
+      localStream = await navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: true,
+      });
+    } catch (_) {
+      this.pushEvent("no_camera");
+    }
 
-    const remoteVideo = document.getElementById("remoteVideo");
-    remoteVideo.srcObject = remoteStream;
+    if (localStream) {
+      const webcamVideo = document.getElementById("webcamVideo");
+      webcamVideo.srcObject = localStream;
+      webcamVideo.muted = true;
 
-    // Push tracks from local stream to peer connection
-    localStream.getTracks().forEach((track) => {
-      pc.addTrack(track, localStream);
-    });
+      remoteStream = new MediaStream();
+      const remoteVideo = document.getElementById("remoteVideo");
+      remoteVideo.srcObject = remoteStream;
+
+      // Push tracks from local stream to peer connection
+      localStream.getTracks().forEach((track) => {
+        pc.addTrack(track, localStream);
+      });
+    }
+
     // Get local candidate and let the server know
     pc.onicecandidate = (event) => {
       event.candidate &&

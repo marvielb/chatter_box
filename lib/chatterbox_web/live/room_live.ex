@@ -8,10 +8,22 @@ defmodule ChatterboxWeb.RoomLive do
     <div id="room-container" class="flex flex-col gap-2 h-full sm:flex-row" phx-hook="Webcam">
       <div class="flex flex-col gap-1 max-h-[50%] max-w-full w-fit sm:flex-1">
         <div class="bg-amber-800 max-h-[50%] sm:max-h-full rounded-lg">
-          <video id="webcamVideo" class="w-full h-auto max-h-full" autoplay playsinline></video>
+          <%= if @no_camera do %>
+            <div class="w-full aspect-video max-h-full flex justify-center items-center text-white">
+              Fix camera permission to have access to video chat
+            </div>
+          <% else %>
+            <video id="webcamVideo" class="w-full h-auto max-h-full" autoplay playsinline></video>
+          <% end %>
         </div>
         <div class="bg-amber-800 w-full max-h-[50%] sm:max-h-full rounded-lg">
-          <video id="remoteVideo" class="w-full h-auto max-h-full" autoplay playsinline></video>
+          <%= if @no_camera do %>
+            <div class="w-full aspect-video max-h-full flex justify-center items-center text-white">
+              Fix camera permission to have access to video chat
+            </div>
+          <% else %>
+            <video id="remoteVideo" class="w-full h-auto max-h-full" autoplay playsinline></video>
+          <% end %>
         </div>
       </div>
       <div
@@ -79,7 +91,8 @@ defmodule ChatterboxWeb.RoomLive do
             candidate: nil,
             role: nil,
             user_id: nil,
-            max_chat_length: @max_chat_length
+            max_chat_length: @max_chat_length,
+            no_camera: false
           )
 
         _ ->
@@ -133,6 +146,10 @@ defmodule ChatterboxWeb.RoomLive do
   def handle_event("candidate_info", candidate, socket) do
     Room.set_candidate(socket.assigns.room_pid, candidate)
     {:noreply, socket |> assign(candidate: candidate)}
+  end
+
+  def handle_event("no_camera", _, socket) do
+    {:noreply, socket |> assign(no_camera: true)}
   end
 
   def handle_info({:updated_messages, updated_messages}, socket) do
