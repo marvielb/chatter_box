@@ -1,4 +1,5 @@
 let remoteStream = null;
+let localStream = null;
 const servers = {
   iceServers: [
     {
@@ -15,6 +16,7 @@ let Hooks = {};
 Hooks.Webcam = {
   async mounted() {
     const pc = new RTCPeerConnection(servers);
+    const cachedCandidates = [];
     this.handleEvent("create_offer", async () => {
       console.log("creating offer..");
       const offerDescription = await pc.createOffer();
@@ -27,7 +29,7 @@ Hooks.Webcam = {
       this.pushEvent("offer_info", offer);
     });
     this.handleEvent("set_offer", async (offer) => {
-      console.log("setting_offer..");
+      console.log("setting_offer and creating answer...");
       await pc.setRemoteDescription(new RTCSessionDescription(offer));
 
       const answerDescription = await pc.createAnswer();
@@ -44,24 +46,36 @@ Hooks.Webcam = {
       console.log("setting_answer..");
       const answerDescription = new RTCSessionDescription(answer);
       pc.setRemoteDescription(answerDescription);
+      cachedCandidates.forEach((candidate) => {
+        const rtccandidate = new RTCIceCandidate(candidate);
+        pc.addIceCandidate(rtccandidate);
+      });
     });
 
     this.handleEvent("set_candidate", async (candidate) => {
-      console.log("setting_candidate..");
-      const rtccandidate = new RTCIceCandidate(candidate);
-      pc.addIceCandidate(rtccandidate);
+      console.log("setting_candidate..", candidate);
+      if (pc.currentRemoteDescription) {
+        const rtccandidate = new RTCIceCandidate(candidate);
+        pc.addIceCandidate(rtccandidate);
+      } else {
+        cachedCandidates.push(candidate);
+      }
+    });
+    localStream = await navigator.mediaDevices.getUserMedia({
+      video: true,
+      audio: true,
     });
     remoteStream = new MediaStream();
     const webcamVideo = document.getElementById("webcamVideo");
-    webcamVideo.srcObject = window.localStream;
+    webcamVideo.srcObject = localStream;
     webcamVideo.muted = true;
 
     const remoteVideo = document.getElementById("remoteVideo");
     remoteVideo.srcObject = remoteStream;
 
     // Push tracks from local stream to peer connection
-    window.localStream.getTracks().forEach((track) => {
-      pc.addTrack(track, window.localStream);
+    localStream.getTracks().forEach((track) => {
+      pc.addTrack(track, localStream);
     });
     // Get local candidate and let the server know
     pc.onicecandidate = (event) => {
