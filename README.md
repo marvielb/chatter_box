@@ -1,18 +1,47 @@
 # Chatterbox
 
-To start your Phoenix server:
+Chatterbox is an omegle clone. That's it. The project's main goal is to learn about GenServers; to learn
+how they work and how they communicate to one another.
 
-  * Run `mix setup` to install and setup dependencies
-  * Start Phoenix endpoint with `mix phx.server` or inside IEx with `iex -S mix phx.server`
+## Demo
 
-Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
+A live demo can be viewed here: https://chatterbox.marvielb.com/
 
-Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
+## Features:
 
-## Learn more
+- Dead simple queing / matching system. You will get matched depending on the order of joining the queue.
+- Video call is achieved by using [Web RTC](https://webrtc.org/). Signaling handled by GenServers and live view.
+- Chat functionality using GenServer and LiveView.
 
-  * Official website: https://www.phoenixframework.org/
-  * Guides: https://hexdocs.pm/phoenix/overview.html
-  * Docs: https://hexdocs.pm/phoenix
-  * Forum: https://elixirforum.com/c/phoenix-forum
-  * Source: https://github.com/phoenixframework/phoenix
+## Technologies used:
+
+- Elixir
+- Phoenix Framework
+- Live View
+- Tailwind CSS
+- GenServers
+- WebRTC
+
+## Screenshots
+
+### Chat Room - Desktop
+
+![swappy-20241022_212341](https://github.com/user-attachments/assets/7542c2ef-9d24-42c7-a783-986069500d1e)
+
+### Chat Room - Mobile
+
+![swappy-20241022_211345](https://github.com/user-attachments/assets/eed0a86e-6362-4a09-92c0-2ec7f1f95685)
+
+### Queue - Desktop
+
+![Screenshot 2024-10-22 at 21-03-10 Chatterbox · Phoenix Framework](https://github.com/user-attachments/assets/42385ee7-eec8-43c7-aae8-a5856bee3600)
+
+### Queue - Mobile
+
+![Screenshot 2024-10-22 at 21-03-27 Chatterbox · Phoenix Framework](https://github.com/user-attachments/assets/00508256-a35d-4ea9-9d19-05eae3ac71c1)
+
+## TODO
+
+- [ ] Add telemetry.
+- [ ] Refactor the room's HTML into modular components.
+- [ ] More tests for the queue and the LiveView views.
