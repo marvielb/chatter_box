@@ -9,7 +9,8 @@ defmodule Chatterbox.MixProject do
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
-      deps: deps()
+      deps: deps(),
+      releases: releases()
     ]
   end
 
@@ -57,7 +58,21 @@ defmodule Chatterbox.MixProject do
       {:dns_cluster, "~> 0.1.1"},
       {:bandit, "~> 1.5"},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
-      {:uuid, "~> 1.1"}
+      {:uuid, "~> 1.1"},
+      {:burrito, "~> 1.0"}
+    ]
+  end
+
+  def releases do
+    [
+      chatterbox_app: [
+        steps: [:assemble, &Burrito.wrap/1],
+        burrito: [
+          targets: [
+            linux: [os: :linux, cpu: :x86_64]
+          ]
+        ]
+      ]
     ]
   end
 

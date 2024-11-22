@@ -40,6 +40,18 @@ A live demo can be viewed here: https://chatterbox.marvielb.com/
 
 ![Screenshot 2024-10-22 at 21-03-27 Chatterbox · Phoenix Framework](https://github.com/user-attachments/assets/00508256-a35d-4ea9-9d19-05eae3ac71c1)
 
+## Deployment
+
+For the deployment, it uses [burrito](https://github.com/burrito-elixir/burrito) to assemble a single binary to be distributed to a linux server.
+This is done to circumvent Elixir's hard deployment. Now, we just need to be running any linux on the server.
+
+To deploy this:
+
+- Make sure to setup the server to run the built binary on startup.
+- Read the `deploy.sh` script in the root folder to get a clue on what it does
+- Configure the `aws.box` host in the `/etc/hosts` file
+- Run the script `deploy.sh`
+
 ## TODO
 
 - [ ] Add telemetry.
