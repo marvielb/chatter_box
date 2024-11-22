@@ -12,4 +12,5 @@ $SSH_COMMAND MIX_ENV=prod mix compile
 $SSH_COMMAND MIX_ENV=prod mix assets.deploy
 $SSH_COMMAND MIX_ENV=prod mix phx.gen.release
 $SSH_COMMAND MIX_ENV=prod mix release --overwrite
-$SSH_COMMAND PHX_SERVER=true ./_build/prod/rel/chatterbox/bin/chatterbox restart
+$SSH_COMMAND PHX_SERVER=true ./_build/prod/rel/chatterbox/bin/chatterbox stop
+$SSH_COMMAND PHX_SERVER=true ./_build/prod/rel/chatterbox/bin/chatterbox start
