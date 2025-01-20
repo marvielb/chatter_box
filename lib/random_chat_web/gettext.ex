@@ -1,11 +1,11 @@
-defmodule ChatterboxWeb.Gettext do
+defmodule RandomChatWeb.Gettext do
   @moduledoc """
   A module providing Internationalization with a gettext-based API.
 
   By using [Gettext](https://hexdocs.pm/gettext),
   your module gains a set of macros for translations, for example:
 
-      import ChatterboxWeb.Gettext
+      import RandomChatWeb.Gettext
 
       # Simple translation
       gettext("Here is the string to translate")
@@ -20,5 +20,5 @@ defmodule ChatterboxWeb.Gettext do
 
   See the [Gettext Docs](https://hexdocs.pm/gettext) for detailed usage.
   """
-  use Gettext, otp_app: :chatterbox
+  use Gettext, otp_app: :random_chat
 end

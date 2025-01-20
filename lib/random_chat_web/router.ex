@@ -1,11 +1,11 @@
-defmodule ChatterboxWeb.Router do
-  use ChatterboxWeb, :router
+defmodule RandomChatWeb.Router do
+  use RandomChatWeb, :router
 
   pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_session
     plug :fetch_live_flash
-    plug :put_root_layout, html: {ChatterboxWeb.Layouts, :root}
+    plug :put_root_layout, html: {RandomChatWeb.Layouts, :root}
     plug :protect_from_forgery
     plug :put_secure_browser_headers
   end
@@ -14,7 +14,7 @@ defmodule ChatterboxWeb.Router do
     plug :accepts, ["json"]
   end
 
-  scope "/", ChatterboxWeb do
+  scope "/", RandomChatWeb do
     pipe_through :browser
 
     live "/", QueueLive
@@ -22,12 +22,12 @@ defmodule ChatterboxWeb.Router do
   end
 
   # Other scopes may use custom stacks.
-  # scope "/api", ChatterboxWeb do
+  # scope "/api", RandomChatWeb do
   #   pipe_through :api
   # end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
-  if Application.compile_env(:chatterbox, :dev_routes) do
+  if Application.compile_env(:random_chat, :dev_routes) do
     # If you want to use the LiveDashboard in production, you should put
     # it behind authentication and allow only admins to access it.
     # If your application does not have an admins-only section yet,
@@ -38,7 +38,7 @@ defmodule ChatterboxWeb.Router do
     scope "/dev" do
       pipe_through :browser
 
-      live_dashboard "/dashboard", metrics: ChatterboxWeb.Telemetry
+      live_dashboard "/dashboard", metrics: RandomChatWeb.Telemetry
       forward "/mailbox", Plug.Swoosh.MailboxPreview
     end
   end

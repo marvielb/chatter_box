@@ -1,5 +1,5 @@
-defmodule ChatterboxWeb.PageController do
-  use ChatterboxWeb, :controller
+defmodule RandomChatWeb.PageController do
+  use RandomChatWeb, :controller
 
   def home(conn, _params) do
     # The home page is often custom made,

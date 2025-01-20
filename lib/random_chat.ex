@@ -1,6 +1,6 @@
-defmodule Chatterbox do
+defmodule RandomChat do
   @moduledoc """
-  Chatterbox keeps the contexts that define your domain
+  RandomChat keeps the contexts that define your domain
   and business logic.
 
   Contexts are also responsible for managing your data, regardless

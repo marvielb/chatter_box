@@ -1,4 +1,4 @@
-defmodule Chatterbox.Room do
+defmodule RandomChat.Room do
   defmodule State do
     @moduledoc """
     Encapsulates the room's state
@@ -10,8 +10,8 @@ defmodule Chatterbox.Room do
   This module is responsible on managing messages and sending them back to the user.
   Also holds information about the WebRTC info for both users and able to propagate it to one another.
   """
-  alias Chatterbox.Message
-  alias Chatterbox.User
+  alias RandomChat.Message
+  alias RandomChat.User
   use GenServer
 
   @max_messages 100

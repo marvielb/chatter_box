@@ -1,11 +1,11 @@
-# Chatterbox
+# RandomChat
 
-Chatterbox is an omegle clone. That's it. The project's main goal is to learn about GenServers; to learn
+RandomChat is an omegle clone. That's it. The project's main goal is to learn about GenServers; to learn
 how they work and how they communicate to one another.
 
 ## Demo
 
-A live demo can be viewed here: https://chatterbox.marvielb.com/
+A live demo can be viewed here: https://random_chat.marvielb.com/
 
 ## Features:
 
@@ -34,11 +34,11 @@ A live demo can be viewed here: https://chatterbox.marvielb.com/
 
 ### Queue - Desktop
 
-![Screenshot 2024-10-22 at 21-03-10 Chatterbox · Phoenix Framework](https://github.com/user-attachments/assets/42385ee7-eec8-43c7-aae8-a5856bee3600)
+![Screenshot 2024-10-22 at 21-03-10 RandomChat · Phoenix Framework](https://github.com/user-attachments/assets/42385ee7-eec8-43c7-aae8-a5856bee3600)
 
 ### Queue - Mobile
 
-![Screenshot 2024-10-22 at 21-03-27 Chatterbox · Phoenix Framework](https://github.com/user-attachments/assets/00508256-a35d-4ea9-9d19-05eae3ac71c1)
+![Screenshot 2024-10-22 at 21-03-27 RandomChat · Phoenix Framework](https://github.com/user-attachments/assets/00508256-a35d-4ea9-9d19-05eae3ac71c1)
 
 ## Deployment
 

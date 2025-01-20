@@ -1,9 +1,9 @@
-defmodule Chatterbox.MixProject do
+defmodule RandomChat.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :chatterbox,
+      app: :random_chat,
       version: "0.1.0",
       elixir: "~> 1.14",
       elixirc_paths: elixirc_paths(Mix.env()),
@@ -19,7 +19,7 @@ defmodule Chatterbox.MixProject do
   # Type `mix help compile.app` for more information.
   def application do
     [
-      mod: {Chatterbox.Application, []},
+      mod: {RandomChat.Application, []},
       extra_applications: [:logger, :runtime_tools]
     ]
   end
@@ -59,13 +59,14 @@ defmodule Chatterbox.MixProject do
       {:bandit, "~> 1.5"},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:uuid, "~> 1.1"},
-      {:burrito, "~> 1.0"}
+      {:burrito, "~> 1.0"},
+      {:rename, "~> 0.1.0", only: :dev}
     ]
   end
 
   def releases do
     [
-      chatterbox_app: [
+      random_chat_app: [
         steps: [:assemble, &Burrito.wrap/1],
         burrito: [
           targets: [
@@ -86,10 +87,10 @@ defmodule Chatterbox.MixProject do
     [
       setup: ["deps.get", "assets.setup", "assets.build"],
       "assets.setup": ["tailwind.install --if-missing", "esbuild.install --if-missing"],
-      "assets.build": ["tailwind chatterbox", "esbuild chatterbox"],
+      "assets.build": ["tailwind random_chat", "esbuild random_chat"],
       "assets.deploy": [
-        "tailwind chatterbox --minify",
-        "esbuild chatterbox --minify",
+        "tailwind random_chat --minify",
+        "esbuild random_chat --minify",
         "phx.digest"
       ]
     ]

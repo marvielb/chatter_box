@@ -1,7 +1,7 @@
-defmodule ChatterboxWeb.QueueLive do
-  use ChatterboxWeb, :live_view
+defmodule RandomChatWeb.QueueLive do
+  use RandomChatWeb, :live_view
 
-  alias Chatterbox.Queue
+  alias RandomChat.Queue
 
   def render(assigns) do
     ~H"""

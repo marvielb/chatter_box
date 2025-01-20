@@ -1,4 +1,4 @@
-defmodule ChatterboxWeb.Telemetry do
+defmodule RandomChatWeb.Telemetry do
   use Supervisor
   import Telemetry.Metrics
 
@@ -63,7 +63,7 @@ defmodule ChatterboxWeb.Telemetry do
     [
       # A module, function and arguments to be invoked periodically.
       # This function must call :telemetry.execute/3 and a metric must be added above.
-      # {ChatterboxWeb, :count_users, []}
+      # {RandomChatWeb, :count_users, []}
     ]
   end
 end

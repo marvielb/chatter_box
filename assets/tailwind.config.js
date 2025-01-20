@@ -8,8 +8,8 @@ const path = require("path")
 module.exports = {
   content: [
     "./js/**/*.js",
-    "../lib/chatterbox_web.ex",
-    "../lib/chatterbox_web/**/*.*ex"
+    "../lib/random_chat_web.ex",
+    "../lib/random_chat_web/**/*.*ex"
   ],
   theme: {
     extend: {

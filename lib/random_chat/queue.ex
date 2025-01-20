@@ -1,9 +1,9 @@
-defmodule Chatterbox.Queue do
+defmodule RandomChat.Queue do
   @moduledoc """
   This the queue module where it holds the a live view instance that does not have a pair yet.
   Once a new user joins the queue, a room will be craeted then they will be immediately paired with that user.
   """
-  alias Chatterbox.Room
+  alias RandomChat.Room
 
   use GenServer
 
@@ -51,7 +51,7 @@ defmodule Chatterbox.Queue do
 
   defp create_room({pid, user_id_1}, {pid2, user_id_2}) do
     room_id = UUID.uuid4()
-    name = {:via, Registry, {Chatterbox.RoomRegistry, room_id}}
+    name = {:via, Registry, {RandomChat.RoomRegistry, room_id}}
 
     {:ok, _} =
       Room.start(%{user_roles: %{user_id_1 => :requester, user_id_2 => :responder}}, name: name)

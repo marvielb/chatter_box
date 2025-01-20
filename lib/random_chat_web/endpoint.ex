@@ -1,12 +1,12 @@
-defmodule ChatterboxWeb.Endpoint do
-  use Phoenix.Endpoint, otp_app: :chatterbox
+defmodule RandomChatWeb.Endpoint do
+  use Phoenix.Endpoint, otp_app: :random_chat
 
   # The session will be stored in the cookie and signed,
   # this means its contents can be read but not tampered with.
   # Set :encryption_salt if you would also like to encrypt it.
   @session_options [
     store: :cookie,
-    key: "_chatterbox_key",
+    key: "_random_chat_key",
     signing_salt: "WzbuXDY0",
     same_site: "Lax"
   ]
@@ -21,9 +21,9 @@ defmodule ChatterboxWeb.Endpoint do
   # when deploying your static files in production.
   plug Plug.Static,
     at: "/",
-    from: :chatterbox,
+    from: :random_chat,
     gzip: false,
-    only: ChatterboxWeb.static_paths()
+    only: RandomChatWeb.static_paths()
 
   # Code reloading can be explicitly enabled under the
   # :code_reloader configuration of your endpoint.
@@ -48,5 +48,5 @@ defmodule ChatterboxWeb.Endpoint do
   plug Plug.MethodOverride
   plug Plug.Head
   plug Plug.Session, @session_options
-  plug ChatterboxWeb.Router
+  plug RandomChatWeb.Router
 end

@@ -1,4 +1,4 @@
-defmodule Chatterbox.Message do
+defmodule RandomChat.Message do
   @moduledoc """
   The struct for a message.
   """

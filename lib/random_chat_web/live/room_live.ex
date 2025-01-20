@@ -1,6 +1,6 @@
-defmodule ChatterboxWeb.RoomLive do
-  alias Chatterbox.Room
-  use ChatterboxWeb, :live_view
+defmodule RandomChatWeb.RoomLive do
+  alias RandomChat.Room
+  use RandomChatWeb, :live_view
   @max_chat_length 50
 
   def render(assigns) do
@@ -78,7 +78,7 @@ defmodule ChatterboxWeb.RoomLive do
 
   def mount(%{"room_id" => room_id}, _session, socket) do
     socket =
-      case Registry.lookup(Chatterbox.RoomRegistry, room_id) do
+      case Registry.lookup(RandomChat.RoomRegistry, room_id) do
         [{pid, nil}] ->
           Process.monitor(pid)
 

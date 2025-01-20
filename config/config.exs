@@ -7,18 +7,18 @@
 # General application configuration
 import Config
 
-config :chatterbox,
+config :random_chat,
   generators: [timestamp_type: :utc_datetime]
 
 # Configures the endpoint
-config :chatterbox, ChatterboxWeb.Endpoint,
+config :random_chat, RandomChatWeb.Endpoint,
   url: [host: "localhost"],
   adapter: Bandit.PhoenixAdapter,
   render_errors: [
-    formats: [html: ChatterboxWeb.ErrorHTML, json: ChatterboxWeb.ErrorJSON],
+    formats: [html: RandomChatWeb.ErrorHTML, json: RandomChatWeb.ErrorJSON],
     layout: false
   ],
-  pubsub_server: Chatterbox.PubSub,
+  pubsub_server: RandomChat.PubSub,
   live_view: [signing_salt: "t+V3DSu/"]
 
 # Configures the mailer
@@ -28,12 +28,12 @@ config :chatterbox, ChatterboxWeb.Endpoint,
 #
 # For production it's recommended to configure a different adapter
 # at the `config/runtime.exs`.
-config :chatterbox, Chatterbox.Mailer, adapter: Swoosh.Adapters.Local
+config :random_chat, RandomChat.Mailer, adapter: Swoosh.Adapters.Local
 
 # Configure esbuild (the version is required)
 config :esbuild,
   version: "0.17.11",
-  chatterbox: [
+  random_chat: [
     args:
       ~w(js/app.js --bundle --target=es2017 --outdir=../priv/static/assets --external:/fonts/* --external:/images/*),
     cd: Path.expand("../assets", __DIR__),
@@ -43,7 +43,7 @@ config :esbuild,
 # Configure tailwind (the version is required)
 config :tailwind,
   version: "3.4.3",
-  chatterbox: [
+  random_chat: [
     args: ~w(
       --config=tailwind.config.js
       --input=css/app.css

@@ -1,4 +1,4 @@
-defmodule ChatterboxWeb.CoreComponents do
+defmodule RandomChatWeb.CoreComponents do
   @moduledoc """
   Provides core UI components.
 
@@ -17,7 +17,7 @@ defmodule ChatterboxWeb.CoreComponents do
   use Phoenix.Component
 
   alias Phoenix.LiveView.JS
-  import ChatterboxWeb.Gettext
+  import RandomChatWeb.Gettext
 
   @doc """
   Renders a modal.
@@ -661,9 +661,9 @@ defmodule ChatterboxWeb.CoreComponents do
     # with our gettext backend as first argument. Translations are
     # available in the errors.po file (as we use the "errors" domain).
     if count = opts[:count] do
-      Gettext.dngettext(ChatterboxWeb.Gettext, "errors", msg, msg, count, opts)
+      Gettext.dngettext(RandomChatWeb.Gettext, "errors", msg, msg, count, opts)
     else
-      Gettext.dgettext(ChatterboxWeb.Gettext, "errors", msg, opts)
+      Gettext.dgettext(RandomChatWeb.Gettext, "errors", msg, opts)
     end
   end
 

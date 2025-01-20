@@ -1,12 +1,12 @@
-defmodule ChatterboxWeb do
+defmodule RandomChatWeb do
   @moduledoc """
   The entrypoint for defining your web interface, such
   as controllers, components, channels, and so on.
 
   This can be used in your application as:
 
-      use ChatterboxWeb, :controller
-      use ChatterboxWeb, :html
+      use RandomChatWeb, :controller
+      use RandomChatWeb, :html
 
   The definitions below will be executed for every controller,
   component, etc, so keep them short and clean, focused
@@ -40,10 +40,10 @@ defmodule ChatterboxWeb do
     quote do
       use Phoenix.Controller,
         formats: [:html, :json],
-        layouts: [html: ChatterboxWeb.Layouts]
+        layouts: [html: RandomChatWeb.Layouts]
 
       import Plug.Conn
-      import ChatterboxWeb.Gettext
+      import RandomChatWeb.Gettext
 
       unquote(verified_routes())
     end
@@ -52,7 +52,7 @@ defmodule ChatterboxWeb do
   def live_view do
     quote do
       use Phoenix.LiveView,
-        layout: {ChatterboxWeb.Layouts, :app}
+        layout: {RandomChatWeb.Layouts, :app}
 
       unquote(html_helpers())
     end
@@ -84,8 +84,8 @@ defmodule ChatterboxWeb do
       # HTML escaping functionality
       import Phoenix.HTML
       # Core UI components and translation
-      import ChatterboxWeb.CoreComponents
-      import ChatterboxWeb.Gettext
+      import RandomChatWeb.CoreComponents
+      import RandomChatWeb.Gettext
 
       # Shortcut for generating JS commands
       alias Phoenix.LiveView.JS
@@ -98,9 +98,9 @@ defmodule ChatterboxWeb do
   def verified_routes do
     quote do
       use Phoenix.VerifiedRoutes,
-        endpoint: ChatterboxWeb.Endpoint,
-        router: ChatterboxWeb.Router,
-        statics: ChatterboxWeb.static_paths()
+        endpoint: RandomChatWeb.Endpoint,
+        router: RandomChatWeb.Router,
+        statics: RandomChatWeb.static_paths()
     end
   end
 

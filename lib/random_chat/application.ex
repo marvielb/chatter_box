@@ -1,4 +1,4 @@
-defmodule Chatterbox.Application do
+defmodule RandomChat.Application do
   # See https://hexdocs.pm/elixir/Application.html
   # for more information on OTP Applications
   @moduledoc false
@@ -8,22 +8,22 @@ defmodule Chatterbox.Application do
   @impl true
   def start(_type, _args) do
     children = [
-      ChatterboxWeb.Telemetry,
-      {DNSCluster, query: Application.get_env(:chatterbox, :dns_cluster_query) || :ignore},
-      {Phoenix.PubSub, name: Chatterbox.PubSub},
+      RandomChatWeb.Telemetry,
+      {DNSCluster, query: Application.get_env(:random_chat, :dns_cluster_query) || :ignore},
+      {Phoenix.PubSub, name: RandomChat.PubSub},
       # Start the Finch HTTP client for sending emails
-      {Finch, name: Chatterbox.Finch},
-      # Start a worker by calling: Chatterbox.Worker.start_link(arg)
-      # {Chatterbox.Worker, arg},
-      {Chatterbox.Queue, :ok},
+      {Finch, name: RandomChat.Finch},
+      # Start a worker by calling: RandomChat.Worker.start_link(arg)
+      # {RandomChat.Worker, arg},
+      {RandomChat.Queue, :ok},
       # Start to serve requests, typically the last entry
-      {Registry, keys: :unique, name: Chatterbox.RoomRegistry},
-      ChatterboxWeb.Endpoint
+      {Registry, keys: :unique, name: RandomChat.RoomRegistry},
+      RandomChatWeb.Endpoint
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
-    opts = [strategy: :one_for_one, name: Chatterbox.Supervisor]
+    opts = [strategy: :one_for_one, name: RandomChat.Supervisor]
     Supervisor.start_link(children, opts)
   end
 
@@ -31,7 +31,7 @@ defmodule Chatterbox.Application do
   # whenever the application is updated.
   @impl true
   def config_change(changed, _new, removed) do
-    ChatterboxWeb.Endpoint.config_change(changed, removed)
+    RandomChatWeb.Endpoint.config_change(changed, removed)
     :ok
   end
 end

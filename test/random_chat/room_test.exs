@@ -1,6 +1,6 @@
-defmodule Chatterbox.RoomTest do
+defmodule RandomChat.RoomTest do
   use ExUnit.Case, async: true
-  alias Chatterbox.{Message, Room}
+  alias RandomChat.{Message, Room}
   @no_user_check_duration 50
 
   setup do
