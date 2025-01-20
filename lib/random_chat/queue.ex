@@ -3,6 +3,7 @@ defmodule RandomChat.Queue do
   This the queue module where it holds the a live view instance that does not have a pair yet.
   Once a new user joins the queue, a room will be craeted then they will be immediately paired with that user.
   """
+  require OpenTelemetry.Tracer
   alias RandomChat.Room
 
   use GenServer
@@ -14,36 +15,49 @@ defmodule RandomChat.Queue do
   end
 
   def join(pid, user) do
-    GenServer.call(__MODULE__, {:join, pid, user})
+    OpenTelemetry.Tracer.with_span "RandomChat.Queue.join" do
+      OpenTelemetry.Tracer.set_attribute("user", user)
+      span_ctx = OpenTelemetry.Tracer.start_span("RandomChat.Queue.handle_call#join")
+      ctx = OpenTelemetry.Ctx.get_current()
+      GenServer.call(__MODULE__, {:join, pid, user, span_ctx, ctx})
+    end
   end
 
   # Server
 
   def init(_) do
-    {:ok, %{previous_view: nil}}
+    {:ok, %{queued_user: nil}}
   end
 
-  def handle_call({:join, pid, user_id}, _, %{previous_view: previous_view} = state) do
+  def handle_call(
+        {:join, pid, user_id, span_ctx, ctx},
+        _,
+        %{queued_user: queued_user} = state
+      ) do
+    OpenTelemetry.Ctx.attach(ctx)
+    OpenTelemetry.Tracer.set_current_span(span_ctx)
+    OpenTelemetry.Tracer.set_attributes(%{request: {:join, pid, user_id}, state: state})
     Process.monitor(pid)
-    view = {pid, user_id}
+    new_user = {pid, user_id}
+    OpenTelemetry.Tracer.end_span(span_ctx)
 
-    case previous_view do
+    case queued_user do
       nil ->
-        {:reply, :ok, %{state | previous_view: view}}
+        {:reply, :ok, %{state | queued_user: new_user}}
 
       {_, ^user_id} ->
-        {:reply, {:error, :already_joined}, %{state | previous_view: view}}
+        {:reply, {:error, :already_joined}, %{state | queued_user: new_user}}
 
       _ ->
-        create_room(previous_view, view)
-        {:reply, :ok, %{state | previous_view: nil}}
+        create_room(queued_user, new_user)
+        {:reply, :ok, %{state | queued_user: nil}}
     end
   end
 
   def handle_info({:DOWN, _ref, :process, pid, _reason}, state) do
-    with {previous_view_pid, _} <- state.previous_view,
-         ^pid <- previous_view_pid do
-      {:noreply, %{state | previous_view: nil}}
+    with {queued_user_pid, _} <- state.queued_user,
+         ^pid <- queued_user_pid do
+      {:noreply, %{state | queued_user: nil}}
     else
       _ -> {:noreply, state}
     end
@@ -53,10 +67,18 @@ defmodule RandomChat.Queue do
     room_id = UUID.uuid4()
     name = {:via, Registry, {RandomChat.RoomRegistry, room_id}}
 
-    {:ok, _} =
-      Room.start(%{user_roles: %{user_id_1 => :requester, user_id_2 => :responder}}, name: name)
+    OpenTelemetry.Tracer.with_span "RandomChat.Queue.create_room" do
+      OpenTelemetry.Tracer.set_attributes(%{
+        "random_chat.room.id" => room_id,
+        "user_id_1" => user_id_1,
+        "user_id_2" => user_id_2
+      })
 
-    send(pid, {:room_ready, room_id})
-    send(pid2, {:room_ready, room_id})
+      {:ok, _} =
+        Room.start(%{user_roles: %{user_id_1 => :requester, user_id_2 => :responder}}, name: name)
+
+      send(pid, {:room_ready, room_id})
+      send(pid2, {:room_ready, room_id})
+    end
   end
 end

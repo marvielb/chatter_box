@@ -60,7 +60,12 @@ defmodule RandomChat.MixProject do
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:uuid, "~> 1.1"},
       {:burrito, "~> 1.0"},
-      {:rename, "~> 0.1.0", only: :dev}
+      {:rename, "~> 0.1.0", only: :dev},
+      {:opentelemetry, "~> 1.5"},
+      {:opentelemetry_api, "~> 1.4"},
+      {:opentelemetry_exporter, "~> 1.8"},
+      {:opentelemetry_phoenix, "~> 2.0"},
+      {:opentelemetry_bandit, "~> 0.2.0"}
     ]
   end
 
@@ -72,7 +77,8 @@ defmodule RandomChat.MixProject do
           targets: [
             linux: [os: :linux, cpu: :x86_64]
           ]
-        ]
+        ],
+        applications: [opentelemetry_exporter: :permanent, opentelemetry: :temporary]
       ]
     ]
   end

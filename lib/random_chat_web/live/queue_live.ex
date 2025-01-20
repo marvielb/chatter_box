@@ -1,5 +1,6 @@
 defmodule RandomChatWeb.QueueLive do
   use RandomChatWeb, :live_view
+  require OpenTelemetry.Tracer
 
   alias RandomChat.Queue
 
@@ -20,6 +21,8 @@ defmodule RandomChatWeb.QueueLive do
   end
 
   def handle_event("join", %{"user_id" => user_id}, socket) do
+    OpenTelemetry.Tracer.set_attributes(%{"user_id" => user_id})
+
     case Queue.join(self(), user_id) do
       :ok -> {:noreply, socket}
       {:error, :already_joined} -> {:noreply, assign(socket, already_joined: true)}

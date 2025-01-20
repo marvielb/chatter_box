@@ -39,3 +39,4 @@ npm-debug.log
 /.nix-mix
 /.nix-hex
 /burrito_out
+.aider*

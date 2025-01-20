@@ -7,6 +7,9 @@ defmodule RandomChat.Application do
 
   @impl true
   def start(_type, _args) do
+    OpentelemetryBandit.setup()
+    OpentelemetryPhoenix.setup(adapter: :bandit)
+
     children = [
       RandomChatWeb.Telemetry,
       {DNSCluster, query: Application.get_env(:random_chat, :dns_cluster_query) || :ignore},
