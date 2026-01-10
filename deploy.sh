@@ -1,6 +1,6 @@
 #!/bin/sh
 
-HOST=chatterbox@aws.box #set the aws.box IP in the /etc/hosts file.
+HOST=chatterbox@nixlxc.box #set the aws.box IP in the /etc/hosts file.
 PORT=1024
 
 mix deps.get --only prod
